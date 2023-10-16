@@ -1,4 +1,4 @@
-import {Teams, TeamOverview, UserData} from 'types';
+import {Team, TeamOverview, UserData} from 'types';
 
 const getData = async (path = '') => {
     const url = `${process.env.REACT_APP_API_BASE_URL}/${path}`;
@@ -8,7 +8,7 @@ const getData = async (path = '') => {
     return json;
 };
 
-export const getTeams = (): Promise<Teams[]> => {
+export const getTeams = (): Promise<Team[]> => {
     return getData('teams');
 };
 
@@ -18,4 +18,12 @@ export const getTeamOverview = (teamId: string): Promise<TeamOverview> => {
 
 export const getUserData = (userId: string): Promise<UserData> => {
     return getData(`users/${userId}`);
+};
+
+export const getUsersData = async (userIds: string[]): Promise<UserData[]> => {
+    const teamUsers = [];
+    const usersPromises = userIds.map(id => getUserData(id).then(res => teamUsers.push(res)));
+    await Promise.all(usersPromises);
+
+    return teamUsers;
 };

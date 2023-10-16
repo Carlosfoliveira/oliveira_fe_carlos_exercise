@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled, {keyframes} from 'styled-components';
 
 const spinnerAnimation = keyframes`
-from {
+    from {
         transform: rotate(0deg);
     }
     to {

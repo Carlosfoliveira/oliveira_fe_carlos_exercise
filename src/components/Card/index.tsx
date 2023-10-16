@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useNavigate} from 'react-router-dom';
-import {Teams, UserData} from 'types';
+import {Team, UserData} from 'types';
 import {Container} from './styles';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
         value: string;
     }>;
     hasNavigation?: boolean;
-    navigationProps?: UserData | Teams;
+    navigationProps?: UserData | Team;
 }
 
 const Card = ({
@@ -38,7 +38,7 @@ const Card = ({
         >
             {columns.map(({key: columnKey, value}) => (
                 <p key={columnKey}>
-                    <strong>{columnKey}</strong>&nbsp;{value}
+                    <strong>{columnKey}:</strong>&nbsp;{value}
                 </p>
             ))}
         </Container>

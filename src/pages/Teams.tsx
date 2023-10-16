@@ -1,35 +1,39 @@
-import * as React from 'react';
-import {ListItem, Teams as TeamsList} from 'types';
+import React, {useState, useMemo, useEffect} from 'react';
+import {ListItem, Team} from 'types';
+import SearchBar from 'components/SearchBar';
+import {useSearch} from 'hooks/useSearch';
 import {getTeams as fetchTeams} from '../api';
 import Header from '../components/Header';
 import List from '../components/List';
 import {Container} from '../components/GlobalComponents';
 
-var MapT = (teams: TeamsList[]) => {
-    return teams.map(team => {
-        var columns = [
+const mapTeamsToItems = (teams: Team[]): ListItem[] =>
+    teams.map(team => ({
+        id: team.id,
+        url: `/team/${team.id}`,
+        columns: [
             {
                 key: 'Name',
                 value: team.name,
             },
-        ];
-        return {
-            id: team.id,
-            url: `/team/${team.id}`,
-            columns,
-            navigationProps: team,
-        } as ListItem;
-    });
-};
+        ],
+        navigationProps: team,
+    }));
 
 const Teams = () => {
-    const [teams, setTeams] = React.useState<any>([]);
-    const [isLoading, setIsLoading] = React.useState<any>(true);
+    const [teams, setTeams] = useState<Team[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const {filteredItems, searchQuery, handleChange} = useSearch({
+        items: teams,
+        accessor: (team: Team) => team.name,
+    });
 
-    React.useEffect(() => {
+    const filteredTeamItems = useMemo(() => mapTeamsToItems(filteredItems), [filteredItems]);
+
+    useEffect(() => {
         const getTeams = async () => {
-            const response = await fetchTeams();
-            setTeams(response);
+            const data = await fetchTeams();
+            setTeams(data);
             setIsLoading(false);
         };
         getTeams();
@@ -38,7 +42,14 @@ const Teams = () => {
     return (
         <Container>
             <Header title="Teams" showBackButton={false} />
-            <List items={MapT(teams)} isLoading={isLoading} />
+            <SearchBar
+                id="teams-search-bar"
+                searchQuery={searchQuery}
+                onChange={handleChange}
+                disabled={isLoading}
+                placeholder="Search teams by name"
+            />
+            <List items={filteredTeamItems} isLoading={isLoading} />
         </Container>
     );
 };
